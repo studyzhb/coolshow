@@ -1,15 +1,33 @@
-package com.coolshow.app;
+package com.coolshow.app.activity;
+
+import com.coolshow.app.BaseActivity;
+import com.coolshow.app.R;
 
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends BaseActivity {
+	private TextView textView;
+	private Button btn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		textView=(TextView)findViewById(R.id.show_weather);
+		btn=(Button)findViewById(R.id.show_btn);
+		btn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+			}
+		});
+		
 	}
 
 	@Override
@@ -21,9 +39,7 @@ public class MainActivity extends BaseActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
+		
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
