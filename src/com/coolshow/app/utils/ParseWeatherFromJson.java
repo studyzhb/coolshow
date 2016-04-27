@@ -1,30 +1,39 @@
 package com.coolshow.app.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import org.json.JSONObject;
+
 import com.coolshow.app.db.CoolShowDB;
 import com.coolshow.app.model.City;
 import com.coolshow.app.model.Country;
 import com.coolshow.app.model.Province;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 public class ParseWeatherFromJson {
 	/**
-	 * ½âÎö·µ»ØµÄÊ¡¼¶Êı¾İ ´úºÅ|µØÇø¸ñÊ½µÄ
-	 * 01|±±¾©,02|ÉÏº£,03|Ìì½ò,04|ÖØÇì,05|ºÚÁú½­,06|¼ªÁÖ,07|ÁÉÄş,08|ÄÚÃÉ¹Å,09|ºÓ±±,10|É½Î÷,11|ÉÂÎ÷,12|É½¶«,13|ĞÂ½®,14|Î÷²Ø,15|Çàº£,16|¸ÊËà,17|ÄşÏÄ,
-	 * 18|ºÓÄÏ,19|½­ËÕ,20|ºş±±,21|Õã½­,22|°²»Õ,23|¸£½¨,24|½­Î÷,25|ºşÄÏ,26|¹óÖİ,27|ËÄ´¨,28|¹ã¶«,29|ÔÆÄÏ,30|¹ãÎ÷,31|º£ÄÏ,32|Ïã¸Û,33|°ÄÃÅ,34|Ì¨Íå
+	 * è§£æè¿”å›çš„çœçº§æ•°æ® ä»£å·|åœ°åŒºæ ¼å¼çš„
+	 * 01|åŒ—äº¬,02|ä¸Šæµ·,03|å¤©æ´¥,04|é‡åº†,05|é»‘é¾™æ±Ÿ,06|å‰æ—,07|è¾½å®,08|å†…è’™å¤,09|æ²³åŒ—,10|å±±è¥¿,11|é™•è¥¿,12|å±±ä¸œ,13|æ–°ç–†,14|è¥¿è—,15|é’æµ·,16|ç”˜è‚ƒ,17|å®å¤,
+	 * 18|æ²³å—,19|æ±Ÿè‹,20|æ¹–åŒ—,21|æµ™æ±Ÿ,22|å®‰å¾½,23|ç¦å»º,24|æ±Ÿè¥¿,25|æ¹–å—,26|è´µå·,27|å››å·,28|å¹¿ä¸œ,29|äº‘å—,30|å¹¿è¥¿,31|æµ·å—,32|é¦™æ¸¯,33|æ¾³é—¨,34|å°æ¹¾
 	 */
 	public synchronized static boolean handleProvincesResponse(CoolShowDB coolshowDB,String response){
 		if(!TextUtils.isEmpty(response)){
-			//ÌáÈ¡³ö¸÷¸öÊ¡·İ
+			//æå–å‡ºå„ä¸ªçœä»½
 			String[] allProvinces=response.split(",");
 			if(allProvinces!=null&&allProvinces.length>0){
 				for(String p:allProvinces){
 					Province province=new Province();
-					//¸÷¸öÊ¡µÄ´úºÅÓëÃû×Ö·Ö¿ª
+					//å„ä¸ªçœçš„ä»£å·ä¸åå­—åˆ†å¼€
 					String[] pmes=p.split("\\|");
 					province.setProvinceName(pmes[1]); 
 					province.setProvinceCode(pmes[0]);
-					//´æ´¢
+					//å­˜å‚¨
 					coolshowDB.saveProvince(province);
 				}
 				return true;
@@ -33,8 +42,8 @@ public class ParseWeatherFromJson {
 		return false;
 	}
 	/**
-	 * 1801|Ö£Öİ,1802|°²Ñô,1803|ĞÂÏç,1804|Ğí²ı,1805|Æ½¶¥É½,1806|ĞÅÑô,1807|ÄÏÑô,1808|¿ª·â,1809|ÂåÑô
-	 * ÊĞ¼¶Êı¾İ
+	 * 1801|éƒ‘å·,1802|å®‰é˜³,1803|æ–°ä¹¡,1804|è®¸æ˜Œ,1805|å¹³é¡¶å±±,1806|ä¿¡é˜³,1807|å—é˜³,1808|å¼€å°,1809|æ´›é˜³
+	 * å¸‚çº§æ•°æ®
 	 */
 	public synchronized static boolean handleCitiesResponse(CoolShowDB coolshowDB,String response,int provinceId){
 		if(!TextUtils.isEmpty(response)){
@@ -58,10 +67,10 @@ public class ParseWeatherFromJson {
 	
 	
 	/**
-	 * ÏØ¼¶Êı¾İ
-	 * @param coolshowDB Êı¾İ²Ù×÷Àà
-	 * @param response	µØÖ··µ»ØµÄĞÅÏ¢
-	 * @param provinceId ÊĞID
+	 * å¿çº§æ•°æ®
+	 * @param coolshowDB æ•°æ®æ“ä½œç±»
+	 * @param response	åœ°å€è¿”å›çš„ä¿¡æ¯
+	 * @param provinceId å¸‚ID
 	 * @return
 	 */
 	public synchronized static boolean handleCountryResponse(CoolShowDB coolshowDB,String response,int cityId){
@@ -82,6 +91,48 @@ public class ParseWeatherFromJson {
 		return false;
 	}
 	
+	/**
+	 * è§£ææœåŠ¡å™¨è¿”å›çš„JSONæ•°æ®ï¼Œå¹¶å­˜å‚¨åˆ°æœ¬åœ°
+	 * {"weatherinfo":{"city":"é–®æˆçª","cityid":"101180101","temp1":"5éˆ©ï¿½","temp2":"22éˆ©ï¿½",
+	 * "weather":"é…ï¿½","img1":"n0.gif","img2":"d0.gif","ptime":"18:00"}}
+	 */
+	public static void handleWeatherResponse(Context context,String response){
+		try{
+			JSONObject json=new JSONObject(response);
+			JSONObject weatherInfo=json.getJSONObject("weatherinfo");
+			String cityName=weatherInfo.getString("city");
+			String weatherCode=weatherInfo.getString("cityid");
+			String temp1=weatherInfo.getString("temp1");
+			String temp2=weatherInfo.getString("temp2");
+			String weatherState=weatherInfo.getString("weather");
+			String publishTime=weatherInfo.getString("ptime");
+			saveWeatherInfo(context, cityName, weatherCode, temp1, temp2, weatherState, publishTime);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * è¿”å›çš„å¤©æ°”ä¿¡æ¯å­˜å‚¨åˆ°sharedPreferencesæ–‡ä»¶ä¸­
+	 * å…ˆè·å–sharedPreferenceså¯¹è±¡é€šè¿‡PreferenceManagerè·å¾—
+	 * è°ƒç”¨sharedPreferences.edit()è·å¾—sharedPreferences.Editå¯¹è±¡
+	 * åœ¨æ­¤å¯¹è±¡ä¸­æ·»åŠ æ•°æ®ï¼Œç„¶åæäº¤
+	 */
+	public static void saveWeatherInfo(Context context,String cityName,String weatherCode,String temp1,String temp2,String weatherState,String publishTime){
+		//æ ¼å¼åŒ–æ—¥æœŸæ ¼å¼
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyyå¹´Mæœˆdæ—¥", Locale.CHINA);
+		SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(context).edit();
+		editor.putBoolean("city_selected", true);
+		editor.putString("city_name", cityName);
+		editor.putString("weather_code", weatherCode);
+		editor.putString("temp1", temp1);
+		editor.putString("temp2", temp2);
+		editor.putString("weather_state", weatherState);
+		editor.putString("publish_time",publishTime);
+		editor.putString("current_date", sdf.format(new Date()));
+		
+		editor.commit();
+	}
 	
 	
 	

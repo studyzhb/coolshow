@@ -10,12 +10,14 @@ import com.coolshow.app.model.City;
 import com.coolshow.app.model.Country;
 import com.coolshow.app.model.Province;
 import com.coolshow.app.utils.HttpUtils;
-import com.coolshow.app.utils.MyApplication;
 import com.coolshow.app.utils.ParseWeatherFromJson;
 import com.coolshow.app.utils.HttpUtils.HttpCallbackListener;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,6 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ChooseAreaActivity extends BaseActivity {
 	public static final int LEVEL_PROVINCE = 0;
@@ -50,12 +53,22 @@ public class ChooseAreaActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		SharedPreferences spf=PreferenceManager.getDefaultSharedPreferences(this);
+		//城市选中与否标志位
+		if(spf.getBoolean("city_selected", false)){
+			Intent intent=new Intent(this,WeatherActivity.class);
+			startActivity(intent);
+			finish();
+		}
 		setContentView(R.layout.choose_area);
 		list_weather = (ListView) findViewById(R.id.list_view_weather);
 		titleView = (TextView) findViewById(R.id.title_weather);
 		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, datalist);
 		list_weather.setAdapter(adapter);
 		coolshowDB = CoolShowDB.getInstance(this);
+		/**
+		 * 选中县级列表跳转到下个天气页面
+		 */
 		list_weather.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -66,6 +79,12 @@ public class ChooseAreaActivity extends BaseActivity {
 				} else if (currentLevel == LEVEL_CITY) {
 					selectedCtity = cities.get(position);
 					queryCountries();
+				}else if(currentLevel == LEVEL_COUNTRY){
+					String countryCode=countries.get(position).getCountryCode();
+					Intent intent=new Intent(ChooseAreaActivity.this,WeatherActivity.class);
+					intent.putExtra("country_code", countryCode);
+					startActivity(intent);
+					finish();
 				}
 			}
 		});
@@ -140,9 +159,9 @@ public class ChooseAreaActivity extends BaseActivity {
 	private void queryFromServer(final String code,final String type){
 		String address;
 		if(!TextUtils.isEmpty(code)){
-			address="www.weather.com.cn/data/list3/city"+code+".xml";
+			address="http://www.weather.com.cn/data/list3/city"+code+".xml";
 		}else{
-			address="www.weather.com.cn/data/list3/city.xml";
+			address="http://www.weather.com.cn/data/list3/city.xml";
 		}
 		showProgressDialog();
 		HttpUtils.sendRequestWithWeather(address, new HttpCallbackListener() {
@@ -179,7 +198,14 @@ public class ChooseAreaActivity extends BaseActivity {
 			
 			@Override
 			public void onError(Exception e) {
-				
+				runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						closeProgressDialog();
+						Toast.makeText(ChooseAreaActivity.this, "加载失败", Toast.LENGTH_SHORT);
+					}
+				});
 			}
 		});
 	}

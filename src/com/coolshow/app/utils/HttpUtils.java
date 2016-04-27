@@ -1,14 +1,10 @@
 package com.coolshow.app.utils;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class HttpUtils {
 	/**
@@ -21,18 +17,17 @@ public class HttpUtils {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				HttpClient httpClient = null;
-				InputStream is = null;
-				BufferedReader br = null;
+				HttpURLConnection httpClient = null;
 				try {
-					httpClient = new DefaultHttpClient();
-					HttpPost httpPost = new HttpPost(path);
-					HttpResponse httpResponse = httpClient.execute(httpPost);
-					if (httpResponse.getStatusLine().getStatusCode() == 200) {
-						is = httpResponse.getEntity().getContent();
+					URL url=new URL(path);
+					httpClient =(HttpURLConnection) url.openConnection();
+					httpClient.setRequestMethod("GET");
+					httpClient.setConnectTimeout(8000);
+					httpClient.setReadTimeout(8000);
+					InputStream is = httpClient.getInputStream();
 						// 对数据进行缓冲操作
 						// 字节流转换字符流
-						br = new BufferedReader(new InputStreamReader(is));
+					BufferedReader br = new BufferedReader(new InputStreamReader(is));
 						StringBuilder result=new StringBuilder();
 						String line;
 						while((line=br.readLine())!=null){
@@ -41,21 +36,15 @@ public class HttpUtils {
 						if (httpCallback != null) {
 							httpCallback.onFinish(result.toString());
 						}
-					}
 				} catch (Exception e) {
 					if (httpCallback != null) {
 						httpCallback.onError(e);
 					}
 				} finally {
 
-					try {
-						if (br != null) {
-							br.close();
+						if (httpClient!= null) {
+							httpClient.disconnect();
 						}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 				}
 			}
 		}).start();
