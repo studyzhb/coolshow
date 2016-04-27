@@ -3,6 +3,7 @@ package com.coolshow.app.activity;
 import com.coolshow.app.BaseActivity;
 import com.coolshow.app.R;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +26,8 @@ public class MainActivity extends BaseActivity {
 			
 			@Override
 			public void onClick(View v) {
+				Intent intent=new Intent(MainActivity.this,ChooseAreaActivity.class);
+				startActivity(intent);
 			}
 		});
 		

@@ -6,10 +6,12 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="17" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+        android:targetSdkVersion="20" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name="com.coolshow.app.utils.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -22,6 +24,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name="com.coolshow.app.activity.ChooseAreaActivity" >
         </activity>
     </application>
 

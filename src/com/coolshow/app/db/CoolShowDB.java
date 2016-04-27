@@ -20,7 +20,7 @@ import android.database.sqlite.SQLiteDatabase;
  */
 public class CoolShowDB {
 	// 数据库名字
-	public static final String DB_NAME = "";
+	public static final String DB_NAME = "cool_weather_db";
 	// 版本
 	public static final int VERSION = 1;
 	// 单例模式在内部实例化对象
@@ -33,7 +33,9 @@ public class CoolShowDB {
 		db = dbHelper.getWritableDatabase();
 	}
 
-	// 获取实例，保证全局只有一个对象产生
+	/*
+	 * 获取实例，保证全局只有一个对象产生
+	 */
 	public synchronized static CoolShowDB getInstance(Context context) {
 		if (coolshowDB == null) {
 			coolshowDB = new CoolShowDB(context);
@@ -41,7 +43,9 @@ public class CoolShowDB {
 		return coolshowDB;
 	}
 
-	// 存储省一级的数据
+	/*
+	 * 存储省一级的数据
+	 */
 	public void saveProvince(Province province) {
 		if (null != province) {
 			ContentValues values = new ContentValues();
@@ -69,7 +73,9 @@ public class CoolShowDB {
 		}
 		return list;
 	}
-	// 存储市一级的数据
+	/*
+	 * 存储市一级的数据
+	 */
 	public void saveCity(City city) {
 		if (null != city) {
 			ContentValues values = new ContentValues();
@@ -79,7 +85,9 @@ public class CoolShowDB {
 			db.insert("city", null, values);
 		}
 	}
-	// 获取数据库某省下的市一级哦数据
+	/*
+	 * 获取数据库某省下的市一级哦数据
+	 */
 	public List<City> loadCities(int provinceId){
 		List<City> list=new ArrayList<City>();
 		Cursor cursor=db.query("city", null, null, null, null, null, null);
@@ -99,7 +107,9 @@ public class CoolShowDB {
 		return list;
 	}
 
-	// 存储县一级的数据
+	/*
+	 * 存储县一级的数据
+	 */
 	public void saveCountry(Country country) {
 		if (null != country) {
 			ContentValues values = new ContentValues();
@@ -110,7 +120,9 @@ public class CoolShowDB {
 		}
 	}
 
-	// 获取数据库中某城市县一级哦数据
+	/*
+	 * 获取数据库中某城市县一级哦数据
+	 */
 	public List<Country> loadCountries(int cityId){
 		List<Country> list=new ArrayList<Country>();
 		Cursor cursor=db.query("country", null, null, null, null, null, null);
