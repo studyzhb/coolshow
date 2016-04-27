@@ -49,9 +49,9 @@ public class CoolShowDB {
 	public void saveProvince(Province province) {
 		if (null != province) {
 			ContentValues values = new ContentValues();
-			values.put("province_name", province.getProvinceName());
-			values.put("province_code", province.getProvinceCode());
-			db.insert("province", null, values);
+				values.put("province_name", province.getProvinceName());
+				values.put("province_code", province.getProvinceCode());
+				db.insert("province", null, values);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class CoolShowDB {
 	 */
 	public List<City> loadCities(int provinceId){
 		List<City> list=new ArrayList<City>();
-		Cursor cursor=db.query("city", null, null, null, null, null, null);
+		Cursor cursor=db.query("city", null, "province_id=?", new String[]{String.valueOf(provinceId)}, null, null, null);
 		if(cursor.moveToFirst()){
 			do{
 				City city=new City();
@@ -125,7 +125,7 @@ public class CoolShowDB {
 	 */
 	public List<Country> loadCountries(int cityId){
 		List<Country> list=new ArrayList<Country>();
-		Cursor cursor=db.query("country", null, null, null, null, null, null);
+		Cursor cursor=db.query("country", null, "city_id=?", new String[]{String.valueOf(cityId)}, null, null, null);
 		if(cursor.moveToFirst()){
 			do{
 				Country country=new Country();

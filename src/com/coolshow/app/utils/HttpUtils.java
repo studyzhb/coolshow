@@ -1,6 +1,7 @@
 package com.coolshow.app.utils;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -25,14 +26,23 @@ public class HttpUtils {
 					httpClient.setConnectTimeout(8000);
 					httpClient.setReadTimeout(8000);
 					InputStream is = httpClient.getInputStream();
+					ByteArrayOutputStream baos=new ByteArrayOutputStream();
+					
 						// 对数据进行缓冲操作
 						// 字节流转换字符流
-					BufferedReader br = new BufferedReader(new InputStreamReader(is));
-						StringBuilder result=new StringBuilder();
-						String line;
-						while((line=br.readLine())!=null){
-							result.append(line);
-						}
+//					BufferedReader br = new BufferedReader(new InputStreamReader(is));
+//						StringBuilder result=new StringBuilder();
+//						String line;
+//						while((line=br.readLine())!=null){
+//							result.append(line);
+//						}
+					
+					byte[] buffer=new byte[1024];
+					int len=0;
+					while(-1!=(len=is.read(buffer))){
+						baos.write(buffer, 0, len);
+					}
+					String result=new String(baos.toByteArray(),"utf-8");
 						if (httpCallback != null) {
 							httpCallback.onFinish(result.toString());
 						}

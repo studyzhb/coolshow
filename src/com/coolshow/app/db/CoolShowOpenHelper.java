@@ -11,11 +11,11 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class CoolShowOpenHelper extends SQLiteOpenHelper {
 	//省表SQL语句
-	public static final String CREATE_PROVINCE="create table province(id integer primary key autoincrement,province_name text,province_code text)";
+	public static final String CREATE_PROVINCE="create table province("+"id integer primary key autoincrement,"+"province_name text,"+"province_code text)";
 	//市表语句
-	public static final String CREATE_CITY="create table city(id integer primary key autoincrement,city_name text,city_code text,province_id integer)";
+	public static final String CREATE_CITY="create table city("+"id integer primary key autoincrement,"+"city_name text,"+"city_code text,"+"province_id integer)";
 	//县表语句
-	public static final String CREATE_COUNTRY="create table country(id integer primary key autoincrement,country_name text,country_code text,city_id integer)";
+	public static final String CREATE_COUNTRY="create table country("+"id integer primary key autoincrement,"+"country_name text,"+"country_code text,"+"city_id integer)";
 	
 	
 	public CoolShowOpenHelper(Context context, String name, CursorFactory factory, int version) {
