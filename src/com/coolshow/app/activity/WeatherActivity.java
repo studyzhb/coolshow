@@ -6,9 +6,16 @@ import com.coolshow.app.utils.HttpUtils;
 import com.coolshow.app.utils.HttpUtils.HttpCallbackListener;
 import com.coolshow.app.utils.ParseWeatherFromJson;
 
+import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -16,14 +23,19 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+//import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 
 /**
  * @author Administrator
  *
  */
-public class WeatherActivity extends BaseActivity implements OnClickListener{
+public class WeatherActivity extends BaseActivity implements OnClickListener,SensorEventListener,OnRefreshListener{
 	private Button changeCitybtn,refreshWeatherbtn;
 	private LinearLayout weatherInfoLayout;
+	private SensorManager sensorManager;
+	private Vibrator vibrator;
+//	private SwipeRefreshLayout mSwipeLayout;
 	/**
 	 * 显示城市名称
 	 */
@@ -59,11 +71,21 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 		weatherStateText=(TextView)findViewById(R.id.weather_state);
 		temp1Text=(TextView)findViewById(R.id.temp1);
 		temp2Text=(TextView)findViewById(R.id.temp2);
+		
+//		mSwipeLayout=(SwipeRefreshLayout) findViewById(R.id.pull_to_refresh_weather);
+//		mSwipeLayout.setOnRefreshListener(this);
+//		mSwipeLayout.setColorScheme(android.R.color.holo_blue_bright, android.R.color.holo_green_light,android.R.color.holo_orange_light, android.R.color.holo_red_light);
+				
+				
 		changeCitybtn=(Button)findViewById(R.id.change_city);
 		refreshWeatherbtn=(Button)findViewById(R.id.refresh_weather);
 		currentDateText=(TextView)findViewById(R.id.current_date);
 		changeCitybtn.setOnClickListener(this);
 		refreshWeatherbtn.setOnClickListener(this);
+		//获取加速度传感器
+		sensorManager=(SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		vibrator=(Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
+		
 		String countryCode=getIntent().getStringExtra("country_code");
 		if(!TextUtils.isEmpty(countryCode)){
 			//获取县级代号
@@ -157,19 +179,43 @@ public class WeatherActivity extends BaseActivity implements OnClickListener{
 			break;
 
 		case R.id.refresh_weather:
-			publishText.setText("同步中。。。。");
-			SharedPreferences spf=PreferenceManager.getDefaultSharedPreferences(this);
-			String weatherCode=spf.getString("weather_code", "");
-			if(!TextUtils.isEmpty(weatherCode)){
-				queryWeatherInfo(weatherCode);
-			}
+			updateWeather();
 			break;
 		}
 		
 	}
+	void updateWeather(){
+		publishText.setText("同步中。。。。");
+		SharedPreferences spf=PreferenceManager.getDefaultSharedPreferences(this);
+		String weatherCode=spf.getString("weather_code", "");
+		if(!TextUtils.isEmpty(weatherCode)){
+			queryWeatherInfo(weatherCode);
+		}
+	}
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		if(Math.abs(event.values[0])>15||Math.abs(event.values[1])>15||Math.abs(event.values[2])>15){
+			vibrator.vibrate(500);
+			updateWeather();
+		}
+	}
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		
+	}
 	
 	
-	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+		
+	}
+	@Override
+	public void onRefresh() {
+		updateWeather();
+	}
 	
 	
 	

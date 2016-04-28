@@ -9,6 +9,7 @@
         android:targetSdkVersion="20" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:name="com.coolshow.app.utils.MyApplication"
